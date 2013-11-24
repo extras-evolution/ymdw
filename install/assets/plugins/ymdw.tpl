@@ -11,7 +11,7 @@
  * @author      Dmi3yy (dmi3yy@gmail.com), Pathologic (maxx@np.by)
  * @internal    @events OnManagerWelcomePrerender
  * @internal    @modx_category Manager and Admin
- * @internal    @properties &app_id = Id приложения;text; &app_pass = Пароль приложения;text; &ym_login = Логин Яндекс;text; &ym_pass = Пароль Яндекс;text; &counter_id = Номер счетчика;text; &counter_range = Количество дней;text;10 &widget_height = Высота виджета;text;350 &rotate_xlabel = Поворот подписей оси X;text;-90
+ * @internal    @properties &app_id = Id приложения;text; &app_pass = Пароль приложения;text; &ym_login = Логин Яндекс;text; &ym_pass = Пароль Яндекс;text; &counter_id = Номер счетчика;text; &counter_range = Количество дней;text;10 &widget_height = Высота виджета;text;350 &rotate_xlabels = Поворот подписей оси X;text;-90
  * @internal    @installset base
  * @internal    @disabled 1
  */
