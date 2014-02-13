@@ -5,20 +5,22 @@
  * show Visitors, Visits and Pagevisits
  *
  * @category    plugin
- * @version     0.2
+ * @version     0.3
  * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License (GPL)
  * @package     modx
  * @author      Dmi3yy (dmi3yy@gmail.com), Pathologic (maxx@np.by)
  * @internal    @events OnManagerWelcomePrerender
  * @internal    @modx_category Manager and Admin
- * @internal    @properties &app_id = Id приложения;text; &app_pass = Пароль приложения;text; &ym_login = Логин Яндекс;text; &ym_pass = Пароль Яндекс;text; &counter_id = Номер счетчика;text; &counter_range = Количество дней;text;10 &widget_height = Высота виджета;text;350 &rotate_xlabels = Поворот подписей оси X;text;-90
+ * @internal    @properties &app_id = Id приложения;text; &app_pass = Пароль приложения;text; &ym_login = Логин Яндекс;text; &ym_pass = Пароль Яндекс;text; &counter_id = Номер счетчика;text; &counter_range = Количество дней;text;10 &widget_height = Высота виджета;text;350 &rotate_xlabels = Поворот подписей оси X;text;-90 &cache_lifetime = Время жизни кэша, часов;text;4
  * @internal    @installset base
  * @internal    @disabled 1
  */
  
 $e = &$modx->Event;
-if($e->name == 'OnManagerWelcomePrerender'){	
-	if(!file_exists(MODX_BASE_PATH . 'assets/cache/ymdw.widgetCache-'.date('z').'.php')){
+if($e->name == 'OnManagerWelcomePrerender'){
+	require_once(MODX_MANAGER_PATH.'media/rss/rss_cache.inc');
+	$cache = new RSSCache(MODX_BASE_PATH.$modx->getCachePath(), $cache_lifetime*3600);	
+	if($cache->check_cache('ymdw') != 'HIT'){
 		require (MODX_BASE_PATH.'assets/plugins/ymdw/yandexapi.class.php');
 		$ym = new YandexAPI($app_id, $app_pass);
 		$ym->LogIn($ym_login, $ym_pass);
@@ -44,7 +46,7 @@ if($e->name == 'OnManagerWelcomePrerender'){
 				$flot_data_visitors = '['.implode(',',$visitors).']';
 				$flot_data_visits = '['.implode(',',$visits).']';
 				$flot_data_views = '['.implode(',',$views).']';
-				$output = ' <div class="sectionHeader">Яндекс.Метрика</div>
+				$output = ' <div class="sectionHeader">Яндекс.Метрика (обновлялось '.date('d.m.Y в H:i').')</div>
 					<div class="sectionBody" id="ymdw" style="height:'.$widget_height.'px"></div>
 					<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 					<script language="javascript" type="text/javascript" src="../assets/plugins/ymdw/jquery.flot.min-time.js"></script>
@@ -104,15 +106,12 @@ if($e->name == 'OnManagerWelcomePrerender'){
 							});
 						});
 					</script>';
-				foreach (glob(MODX_BASE_PATH . 'assets/cache/ymdw.widgetCache-*.php') as $filename) {
-   					unlink($filename);
-				}
-				file_put_contents(MODX_BASE_PATH . 'assets/cache/ymdw.widgetCache-'.date('z').'.php', $output);		
+				$cache->set('ymdw',$output);		
 			}
 		}
 	}
 	else{
-		$output = file_get_contents( MODX_BASE_PATH . 'assets/cache/ymdw.widgetCache-'.date('z').'.php');
+		$output = $cache->get('ymdw');
 	}
 	$e->output($output);
 }
